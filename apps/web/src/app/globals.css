@@ -1,0 +1,235 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+/* Custom CSS Variables */
+:root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 199 89% 48%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 199 89% 48%;
+    --radius: 0.5rem;
+}
+
+.dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 199 89% 48%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 199 89% 48%;
+}
+
+/* Base Styles */
+* {
+    border-color: hsl(var(--border));
+}
+
+body {
+    color: hsl(var(--foreground));
+    background: hsl(var(--background));
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+}
+
+::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground));
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--foreground));
+}
+
+/* Custom Components */
+@layer components {
+
+    /* Button Styles */
+    .btn {
+        @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background;
+    }
+
+    .btn-primary {
+        @apply bg-primary text-primary-foreground hover:bg-primary/90;
+    }
+
+    .btn-secondary {
+        @apply bg-secondary text-secondary-foreground hover:bg-secondary/80;
+    }
+
+    .btn-outline {
+        @apply border border-input hover:bg-accent hover:text-accent-foreground;
+    }
+
+    .btn-ghost {
+        @apply hover:bg-accent hover:text-accent-foreground;
+    }
+
+    .btn-destructive {
+        @apply bg-destructive text-destructive-foreground hover:bg-destructive/90;
+    }
+
+    .btn-sm {
+        @apply h-9 px-3 rounded-md;
+    }
+
+    .btn-md {
+        @apply h-10 py-2 px-4;
+    }
+
+    .btn-lg {
+        @apply h-11 px-8 rounded-md;
+    }
+
+    /* Input Styles */
+    .input {
+        @apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    /* Card Styles */
+    .card {
+        @apply rounded-lg border bg-card text-card-foreground shadow-sm;
+    }
+
+    .card-header {
+        @apply flex flex-col space-y-1.5 p-6;
+    }
+
+    .card-title {
+        @apply text-2xl font-semibold leading-none tracking-tight;
+    }
+
+    .card-description {
+        @apply text-sm text-muted-foreground;
+    }
+
+    .card-content {
+        @apply p-6 pt-0;
+    }
+
+    .card-footer {
+        @apply flex items-center p-6 pt-0;
+    }
+
+    /* Badge Styles */
+    .badge {
+        @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+    }
+
+    .badge-default {
+        @apply border-transparent bg-primary text-primary-foreground hover:bg-primary/80;
+    }
+
+    .badge-secondary {
+        @apply border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80;
+    }
+
+    .badge-outline {
+        @apply text-foreground;
+    }
+
+    /* Audio Player Styles */
+    .audio-player {
+        @apply w-full bg-white dark:bg-gray-800 rounded-lg shadow-soft p-4;
+    }
+
+    .audio-controls {
+        @apply flex items-center justify-between space-x-4;
+    }
+
+    .audio-progress {
+        @apply flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden;
+    }
+
+    .audio-progress-bar {
+        @apply h-full bg-primary-500 rounded-full transition-all duration-300;
+    }
+
+    /* Editor Styles */
+    .editor {
+        @apply min-h-[400px] w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    /* Citation Styles */
+    .citation {
+        @apply inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-900/20 px-2 py-1 text-xs font-medium text-blue-700 dark:text-blue-300;
+    }
+
+    .citation-hover {
+        @apply hover:bg-blue-100 dark:hover:bg-blue-900/30 cursor-pointer transition-colors;
+    }
+
+    /* Loading States */
+    .loading-skeleton {
+        @apply animate-pulse bg-gray-200 dark:bg-gray-700 rounded;
+    }
+
+    /* Focus Styles */
+    .focus-ring {
+        @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2;
+    }
+}
+
+/* Utility Classes */
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+
+    .gradient-text {
+        @apply bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent;
+    }
+
+    .glass-effect {
+        @apply backdrop-blur-sm bg-white/80 dark:bg-gray-900/80 border border-white/20 dark:border-gray-800/20;
+    }
+}
