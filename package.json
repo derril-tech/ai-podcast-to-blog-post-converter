@@ -10,24 +10,31 @@
     "scripts": {
         "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
         "dev:frontend": "cd apps/web && npm run dev",
-        "dev:backend": "cd apps/api && npm run dev",
+        "dev:backend": "cd apps/api && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload",
         "build": "npm run build:frontend && npm run build:backend",
         "build:frontend": "cd apps/web && npm run build",
-        "build:backend": "cd apps/api && npm run build",
+        "build:backend": "cd apps/api && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000",
         "test": "npm run test:frontend && npm run test:backend",
         "test:frontend": "cd apps/web && npm run test",
-        "test:backend": "cd apps/api && npm run test",
+        "test:backend": "cd apps/api && python -m pytest",
         "lint": "npm run lint:frontend && npm run lint:backend",
         "lint:frontend": "cd apps/web && npm run lint",
-        "lint:backend": "cd apps/api && npm run lint",
+        "lint:backend": "cd apps/api && python -m ruff check .",
         "format": "prettier --write .",
         "type-check": "npm run type-check:frontend && npm run type-check:backend",
         "type-check:frontend": "cd apps/web && npm run type-check",
-        "type-check:backend": "cd apps/api && npm run type-check"
+        "type-check:backend": "cd apps/api && python -m mypy .",
+        "mock:api": "cd apps/api && python mock_server.py",
+        "check-env": "tsx scripts/check-env.ts",
+        "verify-budgets": "tsx scripts/verify-budgets.ts",
+        "prepare": "husky install"
     },
     "devDependencies": {
         "concurrently": "^8.2.2",
-        "prettier": "^3.1.0"
+        "prettier": "^3.1.0",
+        "tsx": "^4.6.0",
+        "husky": "^8.0.3",
+        "lint-staged": "^15.2.0"
     },
     "engines": {
         "node": ">=18.0.0",

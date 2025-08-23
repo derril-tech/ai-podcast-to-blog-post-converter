@@ -15,7 +15,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U echopress -d echopress_ai"]
+      test: [ "CMD-SHELL", "pg_isready -U echopress -d echopress_ai" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -32,7 +32,7 @@ services:
       - redis_data:/data
     command: redis-server --appendonly yes
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -101,7 +101,7 @@ services:
       - minio_data:/data
     command: server /data --console-address ":9001"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
       interval: 30s
       timeout: 20s
       retries: 3
@@ -149,10 +149,36 @@ services:
     image: mailhog/mailhog:latest
     container_name: echopress-mailhog
     ports:
-      - "1025:1025"  # SMTP
-      - "8025:8025"  # Web UI
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
     networks:
       - echopress-network
+
+  # Development environment for VS Code devcontainer
+  dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    container_name: echopress-dev
+    volumes:
+      - .:/workspace:cached
+      - node_modules:/workspace/node_modules
+      - web_node_modules:/workspace/apps/web/node_modules
+      - api_python_cache:/workspace/apps/api/__pycache__
+    ports:
+      - "3000:3000"
+      - "8000:8000"
+      - "5432:5432"
+      - "6379:6379"
+    environment:
+      - NODE_ENV=development
+      - PYTHONPATH=/workspace/apps/api
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - echopress-network
+    command: sleep infinity
 
 volumes:
   postgres_data:
@@ -160,6 +186,10 @@ volumes:
   minio_data:
   prometheus_data:
   grafana_data:
+  node_modules:
+  web_node_modules:
+  api_python_cache:
+
 
 networks:
   echopress-network:

@@ -264,6 +264,95 @@
 - **Code Comments**: JSDoc for functions, inline comments for complex logic
 - **Architecture Decisions**: ADR (Architecture Decision Records)
 
+## Response Schema & Examples
+
+### Expected Response Format
+When implementing features or making changes, provide responses in this format:
+
+```markdown
+## Summary
+Brief description of what was implemented or changed.
+
+## Changes Made
+- List of specific changes with file paths
+- Technical details and reasoning
+- Any dependencies or requirements
+
+## Code Changes
+
+### File: `path/to/file.ts`
+```typescript
+// Code changes here
+```
+
+### File: `path/to/another/file.py`
+```python
+# Code changes here
+```
+
+## Testing
+- Unit tests added/updated
+- Integration tests considerations
+- Manual testing steps
+
+## Next Steps
+- Any follow-up work needed
+- Dependencies to install
+- Configuration required
+```
+
+### Example Response
+```markdown
+## Summary
+Added user authentication endpoints and JWT token handling to the backend API.
+
+## Changes Made
+- Created JWT authentication service
+- Added login/logout endpoints
+- Implemented password hashing with bcrypt
+- Added user model and database migration
+
+## Code Changes
+
+### File: `apps/api/app/services/auth.py`
+```python
+from passlib.context import CryptContext
+from jose import JWTError, jwt
+from datetime import datetime, timedelta
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+class AuthService:
+    def verify_password(self, plain_password: str, hashed_password: str) -> bool:
+        return pwd_context.verify(plain_password, hashed_password)
+    
+    def get_password_hash(self, password: str) -> str:
+        return pwd_context.hash(password)
+```
+
+### File: `apps/api/app/api/v1/auth.py`
+```python
+@router.post("/login")
+async def login(credentials: LoginRequest):
+    user = await auth_service.authenticate_user(credentials.email, credentials.password)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    access_token = auth_service.create_access_token(data={"sub": user.email})
+    return {"access_token": access_token, "token_type": "bearer"}
+```
+
+## Testing
+- Added unit tests for password hashing
+- Added integration tests for login endpoint
+- Tested with invalid credentials and valid users
+
+## Next Steps
+- Add refresh token functionality
+- Implement password reset flow
+- Add rate limiting to auth endpoints
+```
+
 ---
 
 **Remember**: This is a production-grade application serving enterprise customers. Every change should prioritize reliability, security, and user experience. When in doubt, ask for clarification rather than making assumptions.

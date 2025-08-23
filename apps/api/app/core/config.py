@@ -52,6 +52,7 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: str = Field(..., env="ANTHROPIC_API_KEY")
     OPENAI_MODEL: str = Field(default="gpt-4-turbo-preview", env="OPENAI_MODEL")
     ANTHROPIC_MODEL: str = Field(default="claude-3-sonnet-20240229", env="ANTHROPIC_MODEL")
+    HUGGINGFACE_TOKEN: Optional[str] = Field(default=None, env="HUGGINGFACE_TOKEN")
     
     # Storage
     STORAGE_BUCKET: str = Field(..., env="STORAGE_BUCKET")

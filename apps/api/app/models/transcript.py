@@ -5,6 +5,7 @@ SQLAlchemy model for episode transcripts
 
 from sqlalchemy import Column, String, DateTime, Text, ForeignKey, Float, JSON, Integer
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from app.core.database import Base
 
 class Transcript(Base):
@@ -19,9 +20,9 @@ class Transcript(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
-    # TODO: Add relationships
-    # episode = relationship("Episode", back_populates="transcript")
-    # segments = relationship("TranscriptSegment", back_populates="transcript")
+    # Relationships
+    episode = relationship("Episode", back_populates="transcript")
+    segments = relationship("TranscriptSegment", back_populates="transcript", cascade="all, delete-orphan")
 
 class TranscriptSegment(Base):
     __tablename__ = "transcript_segments"
@@ -36,5 +37,5 @@ class TranscriptSegment(Base):
     vector = Column(String)  # pgvector embedding
     topic = Column(String)
     
-    # TODO: Add relationships
-    # transcript = relationship("Transcript", back_populates="segments")
+    # Relationships
+    transcript = relationship("Transcript", back_populates="segments")

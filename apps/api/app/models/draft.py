@@ -5,6 +5,7 @@ SQLAlchemy model for blog post drafts
 
 from sqlalchemy import Column, String, DateTime, Text, ForeignKey, Integer, JSON
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from app.core.database import Base
 
 class Draft(Base):
@@ -22,7 +23,9 @@ class Draft(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
-    # TODO: Add relationships
-    # episode = relationship("Episode", back_populates="drafts")
-    # brand_voice = relationship("BrandVoice", back_populates="drafts")
-    # exports = relationship("Export", back_populates="draft")
+    # Relationships
+    episode = relationship("Episode", back_populates="drafts")
+    brand_voice = relationship("BrandVoice", back_populates="drafts")
+    exports = relationship("Export", back_populates="draft", cascade="all, delete-orphan")
+    performance_metrics = relationship("ContentPerformance", back_populates="draft", cascade="all, delete-orphan")
+    assets = relationship("Asset", back_populates="draft", cascade="all, delete-orphan")

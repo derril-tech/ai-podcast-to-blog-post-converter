@@ -47,9 +47,9 @@ if [ ! -d "apps/web/node_modules" ]; then
 fi
 
 # Install backend dependencies
-if [ ! -d "apps/api/node_modules" ]; then
+if [ ! -f "apps/api/requirements.txt" ]; then
     echo "📦 Installing backend dependencies..."
-    cd apps/api && npm install && cd ../..
+    cd apps/api && pip install -r requirements.txt && cd ../..
 fi
 
 # Check if .env files exist
@@ -83,7 +83,7 @@ cd apps/web && npm run dev &
 FRONTEND_PID=$!
 
 echo "🔧 Starting backend (FastAPI) on http://localhost:8000..."
-cd ../api && npm run dev &
+cd ../api && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload &
 BACKEND_PID=$!
 
 echo "✅ Development servers started!"

@@ -36,7 +36,10 @@ async def init_db():
     """Initialize database connection and create tables"""
     try:
         # Import models to ensure they are registered
-        from app.models import user, episode, transcript, draft, export, brand_voice
+        from app.models import (
+            user, episode, transcript, draft, export, brand_voice,
+            organization, workspace, analytics, asset
+        )
         
         # Create tables
         async with engine.begin() as conn:

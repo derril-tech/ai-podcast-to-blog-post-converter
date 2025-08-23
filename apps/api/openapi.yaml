@@ -1,0 +1,562 @@
+openapi: 3.0.3
+info:
+  title: EchoPress AI API
+  description: AI-powered podcast to blog post converter with transcription, RAG, and SEO optimization
+  version: 1.0.0
+  contact:
+    name: EchoPress AI Support
+    email: support@echopress.ai
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8000
+    description: Development server
+  - url: https://api.echopress.ai
+    description: Production server
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      description: Check the health status of the API
+      tags:
+        - Health
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "healthy"
+                  service:
+                    type: string
+                    example: "echopress-ai-backend"
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  timestamp:
+                    type: number
+                    example: 1705312800
+
+  /api/v1/episodes:
+    get:
+      summary: List episodes
+      description: Retrieve a paginated list of episodes
+      tags:
+        - Episodes
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: Episodes retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEpisodeResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Create episode
+      description: Create a new episode
+      tags:
+        - Episodes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEpisodeRequest'
+      responses:
+        '201':
+          description: Episode created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EpisodeResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/episodes/{episode_id}:
+    get:
+      summary: Get episode
+      description: Retrieve a specific episode by ID
+      tags:
+        - Episodes
+      parameters:
+        - name: episode_id
+          in: path
+          required: true
+          description: Episode ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Episode retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EpisodeResponse'
+        '404':
+          description: Episode not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/blog-posts:
+    get:
+      summary: List blog posts
+      description: Retrieve a paginated list of blog posts
+      tags:
+        - Blog Posts
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: Blog posts retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBlogPostResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/blog-posts/{post_id}:
+    get:
+      summary: Get blog post
+      description: Retrieve a specific blog post by ID
+      tags:
+        - Blog Posts
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          description: Blog post ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Blog post retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogPostResponse'
+        '404':
+          description: Blog post not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/user/profile:
+    get:
+      summary: Get user profile
+      description: Retrieve the current user's profile
+      tags:
+        - User
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/upload:
+    post:
+      summary: Upload file
+      description: Upload a file (audio, image, etc.)
+      tags:
+        - Upload
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: File to upload
+      responses:
+        '200':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileUploadResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Episode:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1"
+        title:
+          type: string
+          example: "The Future of AI in Podcasting"
+        description:
+          type: string
+          example: "Exploring how artificial intelligence is transforming the podcast industry"
+        audioUrl:
+          type: string
+          format: uri
+          example: "https://example.com/episode1.mp3"
+        duration:
+          type: integer
+          description: Duration in seconds
+          example: 3600
+        transcript:
+          type: string
+          example: "Welcome to our podcast about AI in podcasting..."
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+          example: "completed"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2024-01-15T11:30:00Z"
+      required:
+        - id
+        - title
+        - description
+        - audioUrl
+        - duration
+        - status
+        - createdAt
+        - updatedAt
+
+    BlogPost:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1"
+        title:
+          type: string
+          example: "The Future of AI in Podcasting: A Comprehensive Guide"
+        content:
+          type: string
+          example: "Artificial intelligence is revolutionizing the podcast industry..."
+        excerpt:
+          type: string
+          example: "Discover how AI is transforming podcast creation, distribution, and consumption."
+        seoTitle:
+          type: string
+          example: "AI in Podcasting: The Complete Guide to Future Trends"
+        seoDescription:
+          type: string
+          example: "Learn how artificial intelligence is reshaping the podcast industry..."
+        keywords:
+          type: array
+          items:
+            type: string
+          example: ["AI", "podcasting", "artificial intelligence", "content creation"]
+        status:
+          type: string
+          enum: [draft, published]
+          example: "published"
+        episodeId:
+          type: string
+          example: "1"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-01-15T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2024-01-15T12:00:00Z"
+      required:
+        - id
+        - title
+        - content
+        - excerpt
+        - status
+        - episodeId
+        - createdAt
+        - updatedAt
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1"
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        name:
+          type: string
+          example: "John Doe"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-01-01T00:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:00:00Z"
+      required:
+        - id
+        - email
+        - name
+        - createdAt
+        - updatedAt
+
+    FileUpload:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "upload_123"
+        filename:
+          type: string
+          example: "podcast.mp3"
+        size:
+          type: integer
+          description: File size in bytes
+          example: 1024000
+        mimeType:
+          type: string
+          example: "audio/mpeg"
+        url:
+          type: string
+          format: uri
+          example: "https://example.com/uploads/podcast.mp3"
+        uploadedAt:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:00:00Z"
+      required:
+        - id
+        - filename
+        - size
+        - mimeType
+        - url
+        - uploadedAt
+
+    CreateEpisodeRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "The Future of AI in Podcasting"
+        description:
+          type: string
+          example: "Exploring how artificial intelligence is transforming the podcast industry"
+        audioUrl:
+          type: string
+          format: uri
+          example: "https://example.com/episode1.mp3"
+        duration:
+          type: integer
+          description: Duration in seconds
+          example: 3600
+      required:
+        - title
+        - description
+        - audioUrl
+        - duration
+
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        message:
+          type: string
+          example: "Operation completed successfully"
+        data:
+          type: object
+      required:
+        - success
+        - message
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 10
+        total:
+          type: integer
+          example: 100
+        totalPages:
+          type: integer
+          example: 10
+      required:
+        - page
+        - limit
+        - total
+        - totalPages
+
+    EpisodeResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/Episode'
+
+    PaginatedEpisodeResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Episode'
+            pagination:
+              $ref: '#/components/schemas/Pagination'
+
+    BlogPostResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/BlogPost'
+
+    PaginatedBlogPostResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/BlogPost'
+            pagination:
+              $ref: '#/components/schemas/Pagination'
+
+    UserResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/User'
+
+    FileUploadResponse:
+      allOf:
+        - $ref: '#/components/schemas/ApiResponse'
+        - type: object
+          properties:
+            data:
+              $ref: '#/components/schemas/FileUpload'
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "An error occurred"
+        code:
+          type: string
+          example: "VALIDATION_ERROR"
+        details:
+          type: object
+      required:
+        - success
+        - message
+
+tags:
+  - name: Health
+    description: Health check endpoints
+  - name: Episodes
+    description: Episode management
+  - name: Blog Posts
+    description: Blog post management
+  - name: User
+    description: User management
+  - name: Upload
+    description: File upload operations

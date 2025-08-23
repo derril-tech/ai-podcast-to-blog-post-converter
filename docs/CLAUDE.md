@@ -14,14 +14,14 @@
 
 ### Editable Files (Claude can modify)
 - `apps/web/src/components/` - All React components
-- `apps/web/src/app/` - Next.js pages and layouts
+- `apps/web/src/app/` - Next.js pages and layouts (with _INSTRUCTIONS.md files)
 - `apps/web/src/lib/` - Utility functions and shared code
 - `apps/web/src/hooks/` - Custom React hooks
 - `apps/web/src/store/` - State management (Zustand)
 - `apps/web/src/services/` - API client and external integrations
 - `apps/api/app/api/` - FastAPI endpoints and routers
-- `apps/api/app/services/` - Business logic services
-- `apps/api/app/schemas/` - Pydantic models and validation
+- `apps/api/app/services/` - Business logic services (with _INSTRUCTIONS.md files)
+- `apps/api/app/schemas/` - Pydantic models and validation (with _INSTRUCTIONS.md files)
 - `apps/api/app/models/` - SQLAlchemy database models
 - `apps/api/app/core/` - Core configuration and utilities
 - `packages/` - Shared libraries and utilities
@@ -140,6 +140,38 @@
 - **Backend**: Render with auto-scaling
 - **Database**: Managed PostgreSQL with pgvector
 - **Monitoring**: Prometheus metrics, structured logging
+
+## Infrastructure Scaffolding
+
+### Frontend Pages Created
+- **SEO Studio** (`/seo`): SEO optimization tools with score tracking, content optimization, and competitor analysis
+- **Brand Voice Studio** (`/brand-voice`): Brand voice profile management with tone/style configuration
+- **Blog Post Editor** (`/editor`): Rich text editor for creating and editing blog posts
+
+### Backend Services Scaffolded
+- **TranscriptService**: Audio transcription and processing
+- **DraftService**: Blog post draft management and generation
+- **BrandVoiceService**: Brand voice profile management
+- **ExportService**: Content export and CMS integration
+- **SEOService**: SEO optimization and analysis
+- **AnalyticsService**: Analytics and performance tracking
+
+### Backend Schemas Scaffolded
+- **Transcript schemas**: Transcript data models and validation
+- **Draft schemas**: Blog post draft models and validation
+- **Brand Voice schemas**: Brand voice profile models
+- **Export schemas**: Export and CMS integration models
+- **SEO schemas**: SEO analysis and optimization models
+- **Analytics schemas**: Analytics and performance models
+
+### _INSTRUCTIONS.md Files Added
+- Each page and service directory contains `_INSTRUCTIONS.md` with:
+  - Current state documentation
+  - CLAUDE_TASK markers for implementation
+  - TODO lists for specific features
+  - File structure guidance
+  - Integration points
+  - Success criteria
 
 ## Contextual Knowledge
 
@@ -291,6 +323,105 @@ async def create_episode(
 - **Documentation**: 100% API documentation coverage
 - **Accessibility**: WCAG 2.1 AA compliance
 - **Performance**: Lighthouse score ≥ 95
+
+## START/END Guardrails
+
+### Frontend Components
+When editing React components, use these guardrails:
+
+```typescript
+// START: CLAUDE_EDITABLE
+// This section can be modified by Claude
+export function MyComponent() {
+  // Component implementation
+}
+// END: CLAUDE_EDITABLE
+
+// START: DO_NOT_TOUCH
+// This section should not be modified
+const CONFIG = {
+  // Configuration that should remain unchanged
+};
+// END: DO_NOT_TOUCH
+```
+
+### Backend Services
+When editing Python services, use these guardrails:
+
+```python
+# START: CLAUDE_EDITABLE
+# This section can be modified by Claude
+class MyService:
+    def process_data(self, data: dict) -> dict:
+        # Service implementation
+        pass
+# END: CLAUDE_EDITABLE
+
+# START: DO_NOT_TOUCH
+# This section should not be modified
+DEFAULT_CONFIG = {
+    # Configuration that should remain unchanged
+}
+# END: DO_NOT_TOUCH
+```
+
+## Failure-Mode Playbook
+
+### Schema Mismatch
+**Problem**: API response doesn't match expected TypeScript interface
+**Solution**:
+1. Check Pydantic model in backend
+2. Update TypeScript interface in frontend
+3. Run type checking: `npm run type-check`
+4. Update tests if necessary
+
+### Failing Tests
+**Problem**: Tests are failing after changes
+**Solution**:
+1. Run tests locally: `npm run test`
+2. Check test output for specific failures
+3. Update test fixtures or mock data
+4. Ensure new functionality is properly tested
+
+### Missing Environment Variables
+**Problem**: Application fails due to missing env vars
+**Solution**:
+1. Run environment check: `npm run check-env`
+2. Copy from `.env.example` to `.env`
+3. Fill in required values
+4. Restart development servers
+
+### Database Migration Issues
+**Problem**: Database schema is out of sync
+**Solution**:
+1. Check migration files in `apps/api/migrations/`
+2. Run migrations: `alembic upgrade head`
+3. Verify database connection
+4. Check for data integrity issues
+
+### Build Failures
+**Problem**: Application won't build
+**Solution**:
+1. Check TypeScript errors: `npm run type-check`
+2. Check linting errors: `npm run lint`
+3. Verify all dependencies are installed
+4. Clear build cache and retry
+
+### Performance Issues
+**Problem**: Application is slow or unresponsive
+**Solution**:
+1. Run performance check: `npm run verify-budgets`
+2. Check API response times
+3. Monitor database query performance
+4. Review bundle sizes and loading times
+
+### Security Vulnerabilities
+**Problem**: Security issues detected
+**Solution**:
+1. Run security audit: `npm audit`
+2. Update vulnerable dependencies
+3. Check authentication and authorization
+4. Review input validation and sanitization
 
 ---
 
